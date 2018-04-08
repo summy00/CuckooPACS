@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>DICOM Web Viewer</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="DICOM Web Viewer (DWV) simple version">
+    <meta name="keywords" content="DICOM,HTML5,JavaScript,medical,imaging,DWV">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename="css/style.css") }}">
+    <style type="text/css">
+        body {
+            background: #252525;
+            color: #fff;
+        }
+
+        button {
+            margin: 5px;
+            padding: 10px 10px;
+            border: 0 none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            background-color: #444;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+        button:disabled {
+            background-color: #08b;
+        }
+
+        .toolbar {
+            font: 14px arial, sans-serif;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .wl-button,
+        .reset-button {
+            margin-right: 5px;
+        }
+
+        .layerContainer {
+            margin: auto;
+            text-align: center;
+        }
+
+        .imageLayer {
+            left: 0px;
+        }
+    </style>
+    <!-- mobile web app -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <link rel="shortcut icon" sizes="16x16" href="resources/icons/dwv-16.png" />
+    <link rel="shortcut icon" sizes="60x60" href="resources/icons/dwv-60.png" />
+    <link rel="shortcut icon" sizes="128x128" href="resources/icons/dwv-128.png" />
+    <!-- apple specific -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <link rel="apple-touch-icon" sizes="16x16" href="resources/icons/dwv-16.png" />
+    <link rel="apple-touch-icon" sizes="60x60" href="resources/icons/dwv-60.png" />
+    <link rel="apple-touch-icon" sizes="128x128" href="resources/icons/dwv-128.png" />
+    <!-- Third party (dwv) -->
+    <script src="{{ url_for('static', filename="ext/Konva/konva.js") }}"></script>
+    <script src="{{ url_for('static', filename="ext/jquery/jquery-2.1.4.min.js") }}"></script>
+    <!-- <script src="{{ url_for('static', filename="ext/jquery-mobile/jquery.mobile-1.4.5.min.js") }}"></script> -->
+
+    <script src="{{ url_for('static', filename="ext/modernizr/modernizr.js") }}"></script>
+    <script src="{{ url_for('static', filename="ext/i18next/i18next.min.js") }}"></script>
+    <script src="{{ url_for('static', filename="ext/i18next/i18nextXHRBackend.min.js") }}"></script>
+    <script src="{{ url_for('static', filename="ext/i18next/i18nextBrowserLanguageDetector.min.js") }}"></script>
+
+    <!-- decoders -->
+    <script src="{{ url_for('static', filename="decoders/pdfjs/jpx.js") }}"></script>
+    <script src="{{ url_for('static', filename="decoders/pdfjs/util.js") }}"></script>
+    <script src="{{ url_for('static', filename="decoders/pdfjs/arithmetic_decoder.js") }}"></script>
+    <script src="{{ url_for('static', filename="decoders/pdfjs/jpg.js") }}"></script>
+    <script src="{{ url_for('static', filename="decoders/rii-mango/lossless-min.js") }}"></script>
+    <!-- Local -->
+    <script src="{{ url_for('static', filename="src/app/application.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/app/drawController.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/app/infoController.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/app/toolboxController.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/app/viewController.js") }}"></script>
+
+    <script src="{{ url_for('static', filename="src/app/state.js") }}"></script>
+    
+    <script src="{{ url_for('static', filename="src/dicom/dicomParser.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/dicom/dictionary.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/gui/filter.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/gui/generic.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/gui/help.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/gui/html.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/gui/info.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/gui/layer.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/gui/loader.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/gui/style.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/gui/tools.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/gui/undo.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/image/decoder.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/image/dicomBufferToView.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/image/domReader.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/image/filter.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/image/geometry.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/image/image.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/image/luts.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/image/view.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/io/filesLoader.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/io/urlsLoader.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/io/memoryLoader.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/io/dicomDataLoader.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/io/jsonTextLoader.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/io/rawImageLoader.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/io/rawVideoLoader.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/math/matrix.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/math/bucketQueue.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/math/point.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/math/scissors.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/math/shapes.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/math/stats.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/math/vector.js") }}"></script>
+
+    <script src="{{ url_for('static', filename="src/tools/draw.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/tools/drawCommands.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/tools/ellipse.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/tools/filter.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/tools/livewire.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/tools/rectangle.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/tools/roi.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/tools/ruler.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/tools/scroll.js") }}"></script>
+
+    <script src="{{ url_for('static', filename="src/tools/freeHand.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/tools/editor.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/tools/Arrow.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/tools/Protractor.js") }}"></script>
+
+    <script src="{{ url_for('static', filename="src/tools/toolbox.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/tools/undo.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/tools/windowLevel.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/tools/zoomPan.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/utils/browser.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/utils/i18n.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/utils/progress.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/utils/listen.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/utils/string.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/utils/uri.js") }}"></script>
+    <script src="{{ url_for('static', filename="src/utils/thread.js") }}"></script>
+
+    <!-- <script src="{{ url_for('static', filename="ext/konva/konva.js") }}"></script> -->
+    <!-- <script src="{{ url_for('static', filename="static/appgui.js") }}"></script> -->
+    <!-- <script src="{{ url_for('static', filename="dist/dwv.js") }}"></script> -->
+    <script type="text/javascript">var files1 = {{files|tojson}}</script>
+    <!-- Launch the app -->
+    <script src="{{ url_for('static', filename="appgui.js") }}"></script>
+    <script src="{{ url_for('static', filename="applauncher.js") }}"></script>
+    
+</head>
+
+<body>
+    <!-- <div id="openFile">
+        <input type="file" id="file-input" />
+        <h3>Contents of the file:</h3>
+        <pre id="file-content"></pre>
+    </div> -->
+    <!-- DWV -->
+    <div id="dwv">
+        <!-- Toolbox -->
+        
+
+        <!-- Toolbar -->
+        <div class="toolbar"></div>
+        <!-- Layer Container -->
+      
+        <div class="layerContainer" urlroot={{urlroot}}>
+            <canvas class="imageLayer">Only for HTML5 compatible browsers...</canvas>
+            <div class="drawDiv"></div>
+        </div>
+        <!-- /layerContainer -->
+        <div class="toolList" title="Toolbox">
+            <ul></ul>
+        </div>
+        <!-- History -->
+        <div class="history" title="History" style="display:none;"></div>
+        <!-- Open popup -->
+        <div id="popupOpen" style="display: none;">
+            <div id="dwv-loaderlist"></div>
+        </div>
+        <!-- /popup -->
+
+    </div>
+    <!-- /dwv -->
+
+</body>
+
+</html>

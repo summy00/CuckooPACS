@@ -1,0 +1,13 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    "version": "0.1.0",
+    "command": "Chrome",
+    "windows": {
+        "command": "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe"
+    },
+    "isShellCommand": true,
+    "args": [
+        "${file}"
+    ],
+    "showOutput": "never"
+}

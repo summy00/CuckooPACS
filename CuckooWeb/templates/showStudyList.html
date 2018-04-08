@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+    <!-- StudyInstanceUID -->
+    <script type="text/javascript">
+        
+    </script>
+<head>
+    <title>DICOM Web Viewer</title>
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td,
+        th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+    </style>
+    <script type="text/javascript">
+        function addRowHandlers() {
+            var table = document.getElementById("tableid1");
+            var rows = table.getElementsByTagName("tr");
+            for (i = 0; i < rows.length; i++) {
+                var currentRow = table.rows[i];
+                var createClickHandler =
+                    function (row) {
+                        //TBD
+                        return function () {
+                            var cell = row.getElementsByTagName("td")[8];
+                            var ip = location.host;
+                            var studyUID = cell.innerHTML;
+                            // studyUID = studyUID.split('.').join('_');
+                            // studyUID.replace(/./g, "_");
+                            var url = 'http://' + ip + '/studypanel/' + studyUID
+                            // alert(url)
+                            document.location.assign(url);
+                        };
+                    };
+
+                currentRow.onclick = createClickHandler(currentRow);
+            }
+        }
+        // window.onload = addRowHandlers();
+    </script>
+</head>
+
+<body onload="addRowHandlers()">
+    <table id="tableid1" class="clstable1">
+        <tr>
+            <th>PatientName</th>
+            <th>PatientSex</th>
+            <th>PatientID</th>
+            <th>PatientAge</th>
+            <th>AccessionNumber</th>
+            <th>StudyDescritpion</th>
+            <th>StudyDate</th>
+            <th>StudyTime</th>
+        </tr>
+        {% for study in studies %}
+        <tr>
+            <td>{{study.PatientName}}</td>
+            <td>{{study.PatientSex}}</td>
+            <td>{{study.PatientID}}</td>
+            <td>{{study.PatientBirthDate}}</td>
+            <td>{{study.AccessionNumber}}</td>
+            <td>{{study.StudyDate}}</td>
+            <td>{{study.StudyTime}}</td>
+            <td>{{study.StudyDescritpion}}</td>
+            <td id = "studyUID" hidden>{{study.StudyInstanceUID}}</td>
+        </tr>
+        {% endfor %}
+        <!-- <tr>
+            <td>TBD</td>
+            <td>TBD</td>
+            <td>TBD</td>
+            <td>TBD</td>
+            <td>TBD</td>
+            <td>TBD</td>
+            <td>TBD</td>
+            <td>TBD</td>
+        </tr>
+        <tr>
+            <td>TBD</td>
+            <td>TBD</td>
+            <td>TBD</td>
+            <td>TBD</td>
+            <td>TBD</td>
+            <td>TBD</td>
+            <td>TBD</td>
+            <td>TBD</td>
+        </tr>
+        <tr>
+            <td>TBD</td>
+            <td>TBD</td>
+            <td>TBD</td>
+            <td>TBD</td>
+            <td>TBD</td>
+            <td>TBD</td>
+            <td>TBD</td>
+            <td>TBD</td>
+        </tr> -->
+    </table>
+</body>
+
+</html>
