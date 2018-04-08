@@ -7,3 +7,5 @@ Using DWV & DOM for simple show
 Back End:
 Using python  flask for web server, pydicom & mudicom for Dicom parse.
 Using MySQL database.
+
+Thanks for XiaoDong supply 'SetWindow' algorithm.
