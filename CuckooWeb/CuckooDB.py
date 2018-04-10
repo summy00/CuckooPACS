@@ -186,6 +186,7 @@ class ImageTable(db.Model):
         self.SourcePath = image_info.SourcePath
         self.AnonymizedPath = image_info.AnonymizedPath
         self.ImageThumbnailPath = image_info.ThumbnailPath
+        self.DcmStoragePath = image_info.DcmStoragePath
         return
 
     SOPInstanceUID = db.Column(db.String(128), primary_key=True, unique=True, nullable=False, index=True)
@@ -206,6 +207,7 @@ class ImageTable(db.Model):
     SourcePath = db.Column(db.String(1024), unique=False, nullable=True)
     AnonymizedPath = db.Column(db.String(1024), unique=False, nullable=True)
     ImageThumbnailPath = db.Column(db.String(1024), unique=False, nullable=True)
+    DcmStoragePath = db.Column(db.String(1024), unique=False, nullable=True)
 
     def Insert(self):
         result = self.query.filter_by(SOPInstanceUID=self.SOPInstanceUID).first()
@@ -301,7 +303,7 @@ class CuckooDB:
             seriesUIDs.append(res.SeriesInstanceUID)
         return seriesUIDs
 
-    def GetImageNameFromSeiresUID(self, seriesUID):
+    def _GetThumbnailNameFromSeiresUID(self, seriesUID):
         imageList = []
         result = ImageTable.query.filter_by(SeriesInstanceUID = seriesUID)
         for res in result:
@@ -315,9 +317,18 @@ class CuckooDB:
         seriesUIDs = self.GetSeriesUIDFromStudyUID(studyUID)
         for seriesUID in seriesUIDs:
             imageList = []
-            imageList = self.GetImageNameFromSeiresUID(seriesUID)
+            imageList = self._GetThumbnailNameFromSeiresUID(seriesUID)
             seriesDict[seriesUID] = imageList
         return seriesDict
+
+    #返回这个Series下所有Image(dcm)的FileName(已经被匿名过了)
+    def GetSeriesDcmsName(self, seriesUID):
+        dcmList = []
+        result = ImageTable.query.filter_by(SeriesInstanceUID=seriesUID)
+        for res in result:
+            fileName = os.path.basename(res.DcmStoragePath)
+            dcmList.append(fileName)
+        return dcmList
 
 
 def create_app():

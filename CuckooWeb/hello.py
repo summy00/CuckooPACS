@@ -79,10 +79,12 @@ def user(name):
     return render_template('user.html', name=name)
 
 ############### All Web URL###############
+
+#for test
 @app.route('/view/seriesdir/<seriesNo>')
 def indexSeriesDir(seriesNo):
     urlroot = 'http://127.0.0.1:5000/dcmfiles/'
-    #get filepath from db
+    #get filename from db
     files = []
     files.append('1.dcm')
     files.append('2.dcm')
@@ -94,20 +96,19 @@ def indexSeriesDir(seriesNo):
     #serve file on web
     return render_template('index.html', urlroot=urlroot, files=files)
 
+#real dwv series panel
 @app.route('/seriespanel/<seriesNo>')
 def showSeriesPanel(seriesNo):
     urlroot = 'http://127.0.0.1:5000/dcmfiles/'
     #get filepath from db
-    files = []
-    files.append('1.dcm')
-    files.append('2.dcm')
-    files.append('3.dcm') 
-    files.append('4.dcm') 
-    files.append('5.dcm') 
-    files.append('6.dcm')
-    files.append('7.dcm')    
+    dbc = get_db()
+    if dbc is None:
+        return None
+    
+    files = dbc.GetSeriesDcmsName(seriesNo)
+   
     #serve file on web
-    return render_template('index.html', urlroot=urlroot, files=files)
+    return render_template('SeriesPanel.html', urlroot=urlroot, files=files)
 
 @app.route('/studyList')
 def getStudyList():

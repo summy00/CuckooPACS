@@ -72,7 +72,8 @@ class CuckooParser:
         self.series_info = SeriesInfo(self.dcm_dataset, self.DeSeriesUID)
 
         # image level
-        self.image_info = ImageInfo(self.dcm_dataset, self.DeImageUID, self.file_path, self.anonymize_out_path, self.thumbnail_path)
+        self.image_info = ImageInfo(self.dcm_dataset, self.DeImageUID, self.file_path,
+                                    self.anonymize_out_path, self.thumbnail_path, self.dcm_storage_path)
 
         self.dcm_info = DcmInfo(self.patient_info, self.study_info, self.series_info, self.image_info)
         return self.dcm_info
@@ -85,7 +86,9 @@ class CuckooParser:
         pixelP = img.SetDefaultWindow(pixel)
         img.Convert2Pic(pixelP, out_Path)
         return
-
+    def SetDcmStoragePath(self, storage_path):
+        self.dcm_storage_path = storage_path
+        return
     def SetAnonymizeOutPaths(self, out_path):
         self.anonymize_out_path = out_path
 
@@ -399,7 +402,8 @@ class ImageInfo:
                  PresentationLUTShape,
                  SourcePath,
                  AnonymizedPath,
-                 ThumbnailPath
+                 ThumbnailPath,
+                 DcmStoragePath
                  ):
         self.SOPInstanceUID = SOPInstanceUID
         self.SeriesInstanceUID = SeriesInstanceUID
@@ -419,9 +423,10 @@ class ImageInfo:
         self.SourcePath = SourcePath
         self.AnonymizedPath = AnonymizedPath
         self.ThumbnailPath = ThumbnailPath
+        self.DcmStoragePath = DcmStoragePath
         return
 
-    def __init__(self, dataset, DeImageUID, source_path, anonymized_path, ThumbnailPath):
+    def __init__(self, dataset, DeImageUID, source_path, anonymized_path, ThumbnailPath, DcmStoragePath):
         image_info_list = [
             'SOPInstanceUID',
             'SeriesInstanceUID',
@@ -462,6 +467,7 @@ class ImageInfo:
         self.SourcePath = source_path
         self.AnonymizedPath = anonymized_path
         self.ThumbnailPath = ThumbnailPath
+        self.DcmStoragePath = DcmStoragePath
 
 
 class DcmInfo:
