@@ -10,7 +10,9 @@ from flask import url_for
 import json
 import os
 from flask_sqlalchemy import SQLAlchemy
-
+from flask import Flask, request, redirect, url_for
+from werkzeug.utils import secure_filename
+import random, string
 from CuckooDB import CuckooDB, create_app, db
 
 app = create_app()
@@ -106,7 +108,13 @@ def showSeriesPanel(seriesNo):
         return None
     
     files = dbc.GetSeriesDcmsName(seriesNo)
-   
+    # files.append('1.dcm')
+    # files.append('2.dcm')
+    # files.append('3.dcm') 
+    # files.append('4.dcm') 
+    # files.append('5.dcm') 
+    # files.append('6.dcm')
+    # files.append('7.dcm')    
     #serve file on web
     return render_template('SeriesPanel.html', urlroot=urlroot, files=files)
 
@@ -119,7 +127,7 @@ def getStudyList():
     # for row in result:
     #     for i in range(result.rowcount):
     #         print row[i]
-    return render_template('showStudyList.html', studies = result)
+    return render_template('StudyList.html', studies = result)
 
 @app.route('/studypanel/<studyUID>')
 def showStudyPanel(studyUID):
@@ -159,6 +167,24 @@ def showStudyPanel(studyUID):
     # transfer paths to template
     return render_template('StudyPanel.html', seriesDict = seriesDict)
 
+def _random_string(self, length = 16):
+    return ''.join(random.choice(string.ascii_letters) for m in range(length))
+    
+uploadDir = '/uploadDir'
+
+@app.route('/upload', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'dcmfile' not in request.files:
+            # flash('No file part')
+            return redirect(request.url)
+        f = request.files['dcmfile']
+        filename = _random_string(8) + '.dcm'
+        dirPath = os.path.dirname(os.path.abspath(__file__)) 
+        filePath = os.path.join(dirPath + uploadDir, filename)
+        res = f.save(filePath)
+        return redirect(url_for('getStudyList'))
 
 if __name__ == '__main__':
     # manager.run()
