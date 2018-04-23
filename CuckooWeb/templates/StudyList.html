@@ -55,36 +55,50 @@
 
 <body onload="addRowHandlers()">
 
-    <form enctype="multipart/form-data" action="/upload" method="post">
-        <input id="dcm_file" name="dcmfile" type="file" />
-        <input type="submit" value="UploadFiles">
+    <!-- <input id="dcm_file" name="dcmfile" type="file" />
+    <button type="submit" onclick="UploadFiles()" id="btn_submit">UploadFiles_Ajax</button> -->
+
+    <form id='upload_form' enctype="multipart/form-data" action="/upload" method="post">
+        <input id="dcm_file_form" name="dcmfile" type="file" multiple/>
+        <button type="submit" id="upload_button" value="UploadFiles_Form">Upload</button>
     </form>
 
-    <table id="tableid1" class="clstable1">
-        <tr>
-            <th>PatientName</th>
-            <th>PatientSex</th>
-            <th>PatientID</th>
-            <th>PatientAge</th>
-            <th>AccessionNumber</th>
-            <th>StudyDescritpion</th>
-            <th>StudyDate</th>
-            <th>StudyTime</th>
-        </tr>
-        {% for study in studies %}
-        <tr>
-            <td>{{study.PatientName}}</td>
-            <td>{{study.PatientSex}}</td>
-            <td>{{study.PatientID}}</td>
-            <td>{{study.PatientBirthDate}}</td>
-            <td>{{study.AccessionNumber}}</td>
-            <td>{{study.StudyDate}}</td>
-            <td>{{study.StudyTime}}</td>
-            <td>{{study.StudyDescritpion}}</td>
-            <td id="studyUID" hidden>{{study.StudyInstanceUID}}</td>
-        </tr>
-        {% endfor %}
-        <!-- <tr>
+    {% if error %}
+    <p class=error>
+        <strong>Error:</strong> {{ error }} {% endif %} 
+        {% with messages = get_flashed_messages() %} {% if messages %}
+        <ul class=flashes>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %} {% endwith %}</p>
+
+        <table id="tableid1" class="clstable1">
+            <tr>
+                <th>PatientName</th>
+                <th>PatientSex</th>
+                <th>PatientID</th>
+                <th>PatientAge</th>
+                <th>AccessionNumber</th>
+                <th>StudyDescritpion</th>
+                <th>StudyDate</th>
+                <th>StudyTime</th>
+            </tr>
+            {% for study in studies %}
+            <tr>
+                <td>{{study.PatientName}}</td>
+                <td>{{study.PatientSex}}</td>
+                <td>{{study.PatientID}}</td>
+                <td>{{study.PatientBirthDate}}</td>
+                <td>{{study.AccessionNumber}}</td>
+                <td>{{study.StudyDate}}</td>
+                <td>{{study.StudyTime}}</td>
+                <td>{{study.StudyDescritpion}}</td>
+                <td id="studyUID" hidden>{{study.StudyInstanceUID}}</td>
+            </tr>
+            {% endfor %}
+            <!-- <tr>
             <td>TBD</td>
             <td>TBD</td>
             <td>TBD</td>
@@ -114,21 +128,92 @@
             <td>TBD</td>
             <td>TBD</td>
         </tr> -->
-    </table>
+        </table>
 
-    <script>
-        var UploadFiles = function () {
-            var files = document.getElementById("dcm_file");
-            var xhr = new XMLHttpRequest();
-            var ip = location.host;
-            var uploadUrl = 'http://' + ip + '/upload/'
-            xhr.open("POST", this.form.action, true);
+        <script>
 
-            xhr.send(files[0])
+            var form = document.getElementById('upload_form');
+            var fileSelect = document.getElementById('dcm_file_form');
+            var uploadButton = document.getElementById('upload_button');
+            form.onsubmit = function (event) {
+                event.preventDefault();
 
-        }
+                // Update button text.
+                uploadButton.innerHTML = 'Uploading...';
 
-    </script>
+                // The rest of the code will go here...
+                // Get the selected files from the input.
+                var files = fileSelect.files;
+                // Create a new FormData object.
+                var formData = new FormData();
+                // Loop through each of the selected files.
+                for (var i = 0; i < files.length; i++) {
+                    var file = files[i];
+
+                    // Check the file type.
+                    // if (!file.type.match('image.*')) {
+                    //     continue;
+                    // }
+
+                    // Add the file to the request.
+                    formData.append('dcmfile', file, file.name);
+                }
+
+                var xhr = new XMLHttpRequest();
+                var ip = location.host;
+                var uploadUrl = 'http://' + ip + '/upload'
+                xhr.open("POST", uploadUrl, true);
+                // xhr.setRequestHeader("Content-Type", "multipart/form-data");
+                xhr.upload.addEventListener("load", function (e) {
+                    alert('upload success');
+                    uploadButton.innerHTML = 'Upload';
+                }, false);
+
+                xhr.addEventListener('error', function (event) {
+                    alert('Oops! upload went wrong.');
+                });
+
+                // xhr.onload = function () {
+                //     if (xhr.status === 200) {
+                //         // File(s) uploaded.
+                //         uploadButton.innerHTML = 'Upload';
+
+                //     } else {
+                //         alert('An error occurred!');
+                //     }
+                // };
+                // Send the Data.
+                xhr.send(formData);
+            }
+            //dig later
+            // var btnSubmit = document.getElementById('btn_submit');
+            // btnSubmit.onsubmit = function () {
+            //     // var myForm = document.getElementById("upload_form");
+            //     var files = document.getElementById("dcm_file");
+            //     var file = files.files[0]
+
+            //     var xhr = new XMLHttpRequest();
+            //     var ip = location.host;
+            //     var uploadUrl = 'http://' + ip + '/upload'
+            //     xhr.open("POST", uploadUrl, true);
+            //     xhr.setRequestHeader("Content-Type", "multipart/form-data");
+
+            //     var formData = new FormData();
+            //     formData.append('dcmfile', file, file.name);
+
+            //     xhr.upload.addEventListener("load", function (e) {
+            //         alert('upload success')
+            //     }, false);
+
+            //     xhr.addEventListener('error', function (event) {
+            //         alert('Oops! upload went wrong.');
+            //     });
+
+            //     xhr.send(formData)
+            // }
+        
+
+        </script>
 </body>
 
 </html>

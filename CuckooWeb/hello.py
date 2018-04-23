@@ -10,12 +10,13 @@ from flask import url_for
 import json
 import os
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, request, redirect, url_for
+from flask import Flask, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
 import random, string
 from CuckooDB import CuckooDB, create_app, db
 
 app = create_app()
+app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 manager = Manager(app)
 bootstrap = Bootstrap(app)
 CORS(app)
@@ -177,13 +178,18 @@ def upload_file():
     if request.method == 'POST':
         # check if the post request has the file part
         if 'dcmfile' not in request.files:
-            # flash('No file part')
-            return redirect(request.url)
-        f = request.files['dcmfile']
-        filename = _random_string(8) + '.dcm'
-        dirPath = os.path.dirname(os.path.abspath(__file__)) 
-        filePath = os.path.join(dirPath + uploadDir, filename)
-        res = f.save(filePath)
+            flash('No file received.')
+            print 'No file received.'
+            # error = 'No file received.'
+            return redirect(url_for('getStudyList'))
+        for f in request.files.getlist('dcmfile'):
+            # f = request.files['dcmfile']
+            filename = _random_string(8) + '.dcm'
+            dirPath = os.path.dirname(os.path.abspath(__file__)) 
+            filePath = os.path.join(dirPath + uploadDir, filename)
+            res = f.save(filePath)
+            flash('file received: ' + filename)
+            print 'file received: ' + filename
         return redirect(url_for('getStudyList'))
 
 if __name__ == '__main__':
