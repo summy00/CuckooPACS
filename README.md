@@ -8,7 +8,7 @@ Back End:
 Using python  flask for web server, pydicom & mudicom for Dicom parse.
 Using MySQL database.
 
-
+---------------
 CuckooWeb: web server, using flask & dwv.
 
 CuckooDicom: app server, dicom parser, parse dcm files, update db, create thumbnail for web display
