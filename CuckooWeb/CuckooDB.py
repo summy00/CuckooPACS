@@ -8,7 +8,7 @@ import os
 import uuid
 
 db = SQLAlchemy()
-db_url = 'mysql+pymysql://root:123456@192.168.1.128:3306/MYSQL57'
+db_url = 'mysql+pymysql://root:123456@127.0.0.1:3306/MYSQL57'
 
 class PatientTable(db.Model):
     __tablename__ = "Patient"
