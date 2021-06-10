@@ -17,3 +17,7 @@ You should use CuckooDicom for parsing dcms and then access CuckooWeb for displa
 
 -----------
 Thanks for XiaoDong supply 'SetWindow' algorithm.
+
+this project will update to 3.9.5...
+
+
